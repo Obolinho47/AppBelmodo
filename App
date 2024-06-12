@@ -1,0 +1,668 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  void _login() {
+    String email = _emailController.text;
+    String senha =_passwordController.text;
+    if (email.isNotEmpty && senha.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyAppWithNavigation()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Usuário ou senha não podem estar vazio')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromARGB(250, 0, 0, 128),
+      appBar: AppBar(
+        title: Text(
+          'Login',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Color.fromARGB(250, 0, 0, 128),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 2.0, 
+            color: Colors.white,
+          ),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white, width: 2.0),
+                        borderRadius: BorderRadius.circular(0.0),
+                      ),
+                      child: Image.network(
+                        'https://upload.wikimedia.org/wikipedia/commons/e/ee/LOGO_UNIFOR_3_page-0001-removebg-preview.png',
+                        width: 150.0,
+                        height: 150.0,
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Usuário',
+                          labelStyle: TextStyle(color: Colors.white),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Senha',
+                          labelStyle: TextStyle(color: Colors.white),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    ElevatedButton(
+                      onPressed: _login,
+                      child: Text('Login'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class MyAppWithNavigation extends StatefulWidget {
+  @override
+  _MyAppWithNavigationState createState() => _MyAppWithNavigationState();
+
+  static _MyAppWithNavigationState of(BuildContext context) {
+    return context.findAncestorStateOfType<_MyAppWithNavigationState>()!;
+  }
+}
+
+class _MyAppWithNavigationState extends State<MyAppWithNavigation> {
+  bool isDarkMode = false;
+
+  void toggleTheme(bool isDark) {
+    setState(() {
+      isDarkMode = isDark;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: isDarkMode ? _darkTheme : _lightTheme,
+      home: BottomNavigationBarExample(
+          toggleTheme: toggleTheme, isDarkMode: isDarkMode),
+    );
+  }
+
+  final ThemeData _lightTheme = ThemeData(
+    primaryColor: Color.fromARGB(250, 0, 74, 247),
+    scaffoldBackgroundColor: Color.fromARGB(250, 0, 74, 247),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Color.fromARGB(250, 0, 74, 247),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: Colors.blue,
+      selectedItemColor: Colors.black,
+    ),
+  );
+
+  final ThemeData _darkTheme = ThemeData(
+    primaryColor: Color.fromARGB(250, 0, 0, 128),
+    scaffoldBackgroundColor: Color.fromARGB(250, 0, 0, 128),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Color.fromARGB(250, 0, 0, 128),
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: Colors.blueGrey[900],
+      selectedItemColor: Colors.white,
+    ),
+  );
+}
+
+class BottomNavigationBarExample extends StatefulWidget {
+  final Function(bool) toggleTheme;
+  final bool isDarkMode;
+
+  BottomNavigationBarExample(
+      {required this.toggleTheme, required this.isDarkMode});
+
+  @override
+  State<BottomNavigationBarExample> createState() =>
+      _BottomNavigationBarExampleState();
+}
+
+class _BottomNavigationBarExampleState
+    extends State<BottomNavigationBarExample> {
+  int _selectedIndex = 0;
+  PageController _pageController = PageController();
+
+  static final List<Widget> _widgetOptions = <Widget>[
+    NumberToImageTextPage(),
+    Terceira(),
+    Quarta(),
+    SettingsScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    _pageController.jumpToPage(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        children: _widgetOptions,
+        onPageChanged: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.art_track),
+            label: 'Obras',
+            backgroundColor: Color.fromARGB(250, 00, 0, 250),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Quem Somos',
+            backgroundColor: Color.fromARGB(250, 0, 0, 250),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.comment),
+            label: 'Opiniões',
+            backgroundColor: Color.fromARGB(250, 0, 0, 250),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configurações',
+            backgroundColor: Color.fromARGB(250, 0, 0, 250),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: widget.isDarkMode ? Colors.black : Colors.black,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class NumberToImageTextPage extends StatefulWidget {
+  @override
+  _NumberToImageTextPageState createState() => _NumberToImageTextPageState();
+}
+
+class _NumberToImageTextPageState extends State<NumberToImageTextPage> {
+  TextEditingController num = TextEditingController();
+  String imagemTAG = "";
+  String textoTAG = "";
+  bool isFavorite = false;
+
+  void naosei() {
+    int n = int.tryParse(num.text) ?? 0;
+    setState(() {
+      switch (n) {
+        case 1:
+          imagemTAG =
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQFsGkO5DLDDR0CW3kEAJil92CbfEABViQTQ&s";
+          textoTAG = "Gosto de Paçoca";
+          break;
+        case 2:
+          imagemTAG =
+              "https://static.wikia.nocookie.net/nerdologiaheroespowers/images/5/5d/Wolverine.png/revision/latest?cb=20180601192623&path-prefix=pt-br";
+          textoTAG = "Esse é lobenzo";
+          break;
+        case 3:
+          imagemTAG =
+              "data:image/jpeg;base64,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";
+          textoTAG =
+              "A Mona Lisa é uma famosa pintura renascentista de Leonardo da Vinci, retratando uma mulher com um sorriso enigmático. A obra é celebrada por sua perfeição técnica e pela aura de mistério em torno da identidade da mulher retratada.";
+          break;
+        default:
+          imagemTAG = "";
+          textoTAG = "Número não corresponde a uma imagem e texto.";
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Buscar TAG',style: TextStyle(color: Colors.white),),
+      ),
+      body: Container(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextField(
+                controller: num,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'insira um número',
+                  labelStyle: TextStyle(color: Colors.white),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(height: 18.0),
+              ElevatedButton(
+                onPressed: naosei,
+                child: Text('Buscar'),
+              ),
+              SizedBox(height: 20.0),
+              imagemTAG.isNotEmpty
+                  ? Column(
+                      children: [
+                        Image.network(
+                          imagemTAG,
+                          height: 200.0,
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
+              SizedBox(height: 15.0),
+              Text(
+                textoTAG,
+                style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+      
+    );
+  }
+}
+
+class Terceira extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Quem somos',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 2.0,
+            color: Colors.white,
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Image.network(
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI_3bMlulK7IXlVfcvRkoanQSMFj0EtRxOfuoOEp7reE2Dwb889vM3HNZSI6wvRj_y8r4&usqp=CAU',
+                    fit: BoxFit.fill,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'O Espaço Cultural Unifor é um museu dedicado à exposição de obras de arte e artefatos culturais. Com um acervo variado e exposições temporárias, o museu oferece uma experiência única de imersão na cultura e história.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Quarta extends StatefulWidget {
+  @override
+  _QuartaState createState() => _QuartaState();
+}
+
+class _QuartaState extends State<Quarta> {
+  int _locationRating = 0;
+  int _visitRating = 0;
+  int ambi = 0;
+  final TextEditingController _emailController = TextEditingController();
+  bool _canSubmit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateSubmitState);
+  }
+
+  void _updateSubmitState() {
+    setState(() {
+      _canSubmit = _locationRating > 0 &&
+          _visitRating > 0 &&
+          ambi > 0 &&
+          _emailController.text.isNotEmpty;
+    });
+  }
+
+  void _submitRating() {
+    setState(() {
+      _locationRating = 0;
+      _visitRating = 0;
+      ambi = 0;
+      _emailController.clear();
+      _canSubmit = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Avaliação Enviada Com Sucesso')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(''),
+        flexibleSpace: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+          ),
+          child: Text(
+            'Espaço Cultural Unifor',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 2.0,
+            color: Colors.white,
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).primaryColor,
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(height: 20.0),
+                      Text('Mediacão:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          for (int i = 1; i <= 5; i++)
+                            IconButton(
+                              icon: Icon(
+                                  i <= _locationRating
+                                      ? Icons.star
+                                      : Icons.star_border,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  _locationRating = i;
+                                  _updateSubmitState();
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 18.0),
+                      Text('Ambientação:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          for (int i = 1; i <= 5; i++)
+                            IconButton(
+                              icon: Icon(
+                                  i <= _visitRating
+                                      ? Icons.star
+                                      : Icons.star_border,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  _visitRating = i;
+                                  _updateSubmitState();
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 18.0),
+                      Text('Atendimento:',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          for (int i = 1; i <= 5; i++)
+                            IconButton(
+                              icon: Icon(
+                                  i <= ambi ? Icons.star : Icons.star_border,
+                                  color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  ambi = i;
+                                  _updateSubmitState();
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 18.0),
+                      TextField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Dê a sua opinião',
+                          labelStyle: TextStyle(color: Colors.white),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.blue),
+                          ),
+                        ),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      SizedBox(height: 20.0),
+                      ElevatedButton(
+                        onPressed: _canSubmit ? _submitRating : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                        ),
+                        child: Text('Enviar Avaliação'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsScreen extends StatefulWidget {
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _isDarkMode = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = MyAppWithNavigation.of(context);
+    _isDarkMode = appState.isDarkMode;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Configurações',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 2.0,
+            color: Colors.white,
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    title: Text(
+                      'Modo Escuro',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: _isDarkMode,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _isDarkMode = value;
+                        appState.toggleTheme(value);
+                      });
+                    },
+                  ),
+                  ListTile(
+                    title: Text(
+                      'Sair da Conta',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    leading: Icon(Icons.exit_to_app, color: Colors.white),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Saindo da Conta'),
+                            content:
+                                Text('Tem certeza que deseja sair da conta?'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()),
+                                    (route) => false,
+                                  );
+                                },
+                                child: Text('Sim'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('Cancelar'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
